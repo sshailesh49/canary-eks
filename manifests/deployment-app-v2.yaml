@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-app
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: my-app
+        version: v2
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        command:
+         - /bin/sh
+         - -c
+         - |
+           # Write custom hostname to index.html
+           echo "app-v1 I'm Canary service  app-v1 served from $HOSTNAME" > /usr/share/nginx/html/index.html;
+           # Start nginx in foreground
+           exec nginx -g 'daemon off;'
+        ports:
+        - containerPort: 80
