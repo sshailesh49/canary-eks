@@ -20,8 +20,8 @@ metadata:
         "type": "forward",
         "forwardConfig": {
           "targetGroups": [
-            { "serviceName": "app-v1", "servicePort": 80, "weight": $OLD_WEIGHT },
-            { "serviceName": "$SERVICE", "servicePort": 80, "weight": $NEW_WEIGHT }
+            { "serviceName": "app-v1", "servicePort": 8000, "weight": $OLD_WEIGHT },
+            { "serviceName": "$SERVICE", "servicePort": 8000, "weight": $NEW_WEIGHT }
           ]
         }
       }
