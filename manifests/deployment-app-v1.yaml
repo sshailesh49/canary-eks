@@ -2,8 +2,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: app-v1
+  namespace: monitoring
+  labels:
+    app: my-app
+    version: v1
+  # annotations:   # if you are not using PodMonitor, then use annotations to scrape metrics
+  #   prometheus.io/scrape: "true"
+  #   prometheus.io/path: "/metrics"
+  #   prometheus.io/port: "8000"
 spec:
-  replicas: 9
+  replicas: 2
   selector:
     matchLabels:
       app: my-app
@@ -13,17 +21,16 @@ spec:
       labels:
         app: my-app
         version: v1
+     
     spec:
       containers:
-      - name: nginx
-        image: nginx
-        command:
-         - /bin/sh
-         - -c
-         - |
-           # Write custom hostname to index.html
-           echo "app-v1 I'm Canary service  app-v1 served from $HOSTNAME" > /usr/share/nginx/html/index.html;
-           # Start nginx in foreground
-           exec nginx -g 'daemon off;'
+      - name: django
+        image: shailesh49/myappv1:latest
         ports:
-        - containerPort: 80
+        - name: web
+          containerPort: 8000
+        env:
+        - name: DJANGO_SETTINGS_MODULE
+          value: "mysite.settings"
+       
+  

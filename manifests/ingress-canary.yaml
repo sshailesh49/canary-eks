@@ -1,31 +1,35 @@
+
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: traffic-split
+  namespace: monitoring
   annotations:
     alb.ingress.kubernetes.io/group.name: traffic-split
     alb.ingress.kubernetes.io/load-balancer-name: traffic-split
-    alb.ingress.kubernetes.io/security-groups: sg-1234567abcdef
+   #  alb.ingress.kubernetes.io/security-groups: sg-1234567abcdef  # ✅ Use correct SG ID
     alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/actions.canary: |
       {
         "type": "forward",
         "forwardConfig": {
           "targetGroups": [
-            {"serviceName": "app-v1", "servicePort": 80, "weight": 90},
-            {"serviceName": "app-v2", "servicePort": 80, "weight": 10}
+            { "serviceName": "app-v1", "servicePort": 8000, "weight": 75 },
+            { "serviceName": "app-v2", "servicePort": 8000, "weight": 25 }
           ]
         }
       }
-    alb.ingress.kubernetes.io/target-type: ip
+    
 spec:
   ingressClassName: alb
   rules:
     - http:
         paths:
-          - backend:
+          - path: /
+            pathType: Prefix
+            backend:
               service:
-                name: canary
+                name: canary  # ← This is a virtual action, not a real service
                 port:
-                  name: use-annotation
-            pathType: ImplementationSpecific
+                  name: use-annotation  # ← This tells ALB to use the `actions.canary` annotation

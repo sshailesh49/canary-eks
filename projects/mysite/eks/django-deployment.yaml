@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-app
+  namespace: monitoring
+  labels:
+    app: django-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: django-app
+  template:
+    metadata:
+      labels:
+        app: django-app
+    spec:
+      containers:
+      - name: django
+        image: shailesh49/myappv2:latest
+        ports:
+        - name: web  
+          containerPort: 8000
+        env:
+        - name: DJANGO_SETTINGS_MODULE
+          value: "mysite.settings"
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: django-app
+  namespace: monitoring
+  labels:
+    app: django-app
+spec:
+  selector:
+    app: django-app
+  type: NodePort
+  ports:
+    - name: web
+      port: 8000
+      targetPort: 8000
+      nodePort: 30000
+
+---
+
+
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: django-app
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: django-app
+  podMetricsEndpoints:
+    - port: web
+      path: /metrics
+      interval: 15s
+  namespaceSelector:
+    matchNames:
+      - monitoring
+

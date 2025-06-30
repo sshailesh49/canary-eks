@@ -1,0 +1,15 @@
+Fri Jun 27 21:10:49 IST 2025 | django_http_responses_total_by_status_view_method_total{status="200"}
+View: prometheus-django-metrics, Method: GET, Status: 200, Value: 420
+View: home, Method: GET, Status: 200, Value: 19
+Fri Jun 27 21:16:49 IST 2025 | django_http_responses_total_by_status_view_method_total{status="200"}
+View: prometheus-django-metrics, Method: GET, Status: 200, Value: 444
+View: home, Method: GET, Status: 200, Value: 22
+Fri Jun 27 21:31:41 IST 2025 | django_http_responses_total_by_status_view_method_total{status="200"}
+View: prometheus-django-metrics, Method: GET, Status: 200, Value: 504
+View: home, Method: GET, Status: 200, Value: 24
+Fri Jun 27 21:34:38 IST 2025 | django_http_responses_total_by_status_view_method_total{status="200"}
+View: prometheus-django-metrics, Method: GET, Status: 200, Value: 516
+View: home, Method: GET, Status: 200, Value: 24
+Fri Jun 27 21:35:11 IST 2025 | django_http_responses_total_by_status_view_method_total{status="200"}
+View: prometheus-django-metrics, Method: GET, Status: 200, Value: 518
+View: home, Method: GET, Status: 200, Value: 29

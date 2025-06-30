@@ -8,7 +8,7 @@ pipeline {
   stages {
     stage('Deploy Canary') {
       steps {
-        sh 'kubectl apply -f manifests/ingress-canary.yaml'
+        sh 'kubectl apply -f manifests/'
       }
     }
     stage('Monitor Metrics') {

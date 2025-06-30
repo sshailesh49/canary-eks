@@ -1,0 +1,43 @@
+# ⚙️ Namespace Setup
+namespaceOverride: monitoring  # Helm से namespace override करें
+
+# ✅ Custom ServiceAccount
+serviceAccounts:
+  server:
+    create: true
+    name: prometheus-k8s
+
+# ✅ Prometheus Configuration
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelector:
+      matchLabels:
+        release: prometheus   # ⚠️ आपके ServiceMonitor में ये label होना चाहिए
+
+    podMonitorSelector:
+      matchLabels:
+        app: my-app           # ⚠️ आपके PodMonitor में ये label होना चाहिए
+
+    resources:
+      requests:
+        memory: 400Mi
+
+    enableAdminAPI: false
+
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+
+# ✅ Alertmanager Configuration (optional)
+alertmanager:
+  enabled: true
+  service:
+    port: 9093
+
+# ✅ Expose Prometheus via NodePort
+server:
+  service:
+    type: NodePort
+    nodePort: 30090
+
+  

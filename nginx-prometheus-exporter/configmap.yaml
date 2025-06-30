@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-custom-config
+  namespace: monitoring
+data:
+  default.conf: |
+    server {
+        listen 8080;
+
+        location /stub_status {
+            stub_status;
+            allow 127.0.0.1;
+            deny all;
+        }
+
+        location / {
+            root /usr/share/nginx/html;
+            index index.html;
+        }
+    }
+
