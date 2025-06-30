@@ -1,41 +1,91 @@
+
+
+
+@Library('Shared') _
+
 pipeline {
   agent any
+
   environment {
     KUBECTL_VERSION = 'v1.30.0'
-    KUBECONFIG = credentials('eks-kubeconfig-id')
     THRESHOLD = '5'
+    AWS_REGION = 'us-west-2'
+    EKS_CLUSTER = 'my-eks-cluster'
   }
+
   stages {
+
+    stage('Checkout from Git') {
+      steps {
+        script {
+          code_checkout('https://github.com/sshailesh49/canary-eks.git', 'main', 'git-token')
+        }
+      }
+    }
+
     stage('Deploy Canary') {
       steps {
-        sh 'kubectl apply -f manifests/'
+        withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'shailesh-aws-id', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+          sh '''
+            aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER
+            kubectl get all -A
+          '''
+        }
       }
     }
-    stage('Monitor Metrics') {
+
+    stage('Monitor Initial Metrics') {
       steps {
         sh 'chmod +x scripts/monitor_metrics.sh'
-        sh './scripts/monitor_metrics.sh $THRESHOLD'
+        sh './scripts/monitor_metrics.sh'
       }
     }
-    stage('Promote to 30%') {
-      steps {
-        sh './scripts/update_ingress_weight.sh app-v2 30'
-      }
-    }
+
     stage('Promote to 50%') {
       steps {
-        sh './scripts/update_ingress_weight.sh app-v2 50'
+        withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'shailesh-aws-id', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+          sh '''
+            aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER
+            chmod +x scripts/update_ingress_weight.sh
+            ./scripts/update_ingress_weight.sh app-v2 50
+          '''
+        }
       }
     }
+
+    stage('Monitor After 50%') {
+      steps {
+         sh 'chmod +x scripts/monitor_metrics.sh'
+        sh './scripts/monitor_metrics.sh'
+      }
+    }
+
     stage('Promote to 100%') {
       steps {
-        sh './scripts/update_ingress_weight.sh app-v2 100'
+        withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'shailesh-aws-id', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+          sh '''
+            aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER
+             chmod +x scripts/update_ingress_weight.sh
+            ./scripts/update_ingress_weight.sh app-v2 100
+          '''
+        }
       }
     }
   }
+
   post {
     failure {
-      sh './scripts/update_ingress_weight.sh app-v2 0'
+      echo "❌ Pipeline failed. Reverting traffic to app-v1."
+      withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'shailesh-aws-id', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+        sh '''
+          aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER
+           chmod +x scripts/update_ingress_weight.sh
+          ./scripts/update_ingress_weight.sh app-v2 0
+        '''
+      }
+    }
+    success {
+      echo "✅ Canary promotion to 100% successful."
     }
   }
 }
