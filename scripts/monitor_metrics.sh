@@ -5,7 +5,7 @@
 # ✅ CONFIGURATION
 # -------------------------
 
-PROM_URL="http://localhost:9090"
+PROM_URL="http://44.243.14.106:32408/"
 QUERY_200='sum(increase(django_http_responses_total_by_status_view_method_total{status="200", view="home",job="monitoring/my-app-v2"}[1m]))'
 QUERY_404='sum(increase(django_http_responses_total_by_status_view_method_total{status="404", view="home",job="monitoring/my-app-v2"}[1m]))'
 LOG_FILE="./pipeline_status.log"
