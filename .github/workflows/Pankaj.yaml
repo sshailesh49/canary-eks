@@ -15,5 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build ./projects/mysite -t test-latest
+      run: |
+          docker build ./projects/mysite -t test-latest
+          docker images 
 
