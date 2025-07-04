@@ -1,7 +1,16 @@
 output "cluster_name" {
-  value = aws_eks_cluster.my-eks-cluster.name
+  value = aws_eks_cluster.eks.name
 }
 
-output "oidc_provider_arn" {
-  value = aws_iam_openid_connect_provider.oidc.arn
+output "cluster_endpoint" {
+  value = aws_eks_cluster.eks.endpoint
 }
+
+output "cluster_ca_certificate" {
+  value = aws_eks_cluster.eks.certificate_authority[0].data
+}
+
+output "region" {
+  value = var.region
+}
+
