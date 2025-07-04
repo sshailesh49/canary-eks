@@ -54,9 +54,11 @@ jobs:
     #   run: terraform apply -auto-approve
     - name: Install kubectl
       run: |
-         curl -LO "https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-         chmod +x kubectl
-         sudo mv kubectl /usr/local/bin/
+          KUBECTL_VERSION=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
+          curl -LO "https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+
     - name: Configure kubectl with EKS
       run: |
           aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_REGION
