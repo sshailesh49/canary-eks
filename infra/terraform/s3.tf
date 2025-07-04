@@ -4,7 +4,7 @@ provider "aws" {
 
 # ✅ Create S3 bucket to hold state
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "my-eks-terraform-state"
+  bucket = "my-eks-terraform-state-sshailesh49"
   force_destroy = true
 
   versioning {
