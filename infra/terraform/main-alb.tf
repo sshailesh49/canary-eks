@@ -38,7 +38,7 @@ resource "aws_iam_policy" "alb_policy" {
   name        = "AWSLoadBalancerControllerIAMPolicy"
   path        = "/"
   description = "Policy for ALB ingress controller"
-  policy      = file("${path.module}/alb-iam-policy.json")
+  policy      = file("${path.module}/iam-policy.json")
 }
 
 resource "aws_iam_role_policy_attachment" "alb_attach" {
