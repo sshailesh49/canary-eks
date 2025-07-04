@@ -29,6 +29,7 @@ jobs:
         python-version: "3.11"
     - name: Install Dependencies
       run: |
+        docker --version
         python -m pip install --upgrade pip                 # cd projects/mysite
         pip install -r projects/mysite/requirements.txt     #pip install -r requirements.txt
     - name: Run Tests
