@@ -52,3 +52,19 @@ jobs:
     - name: Terraform Apply
       working-directory: infra/terraform
       run: terraform apply -auto-approve
+    - name: Install kubectl
+      run: |
+         curl -LO "https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+         chmod +x kubectl
+         sudo mv kubectl /usr/local/bin/
+    - name: Configure kubectl with EKS
+      run: |
+          aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_REGION
+    - name: Deploment Apply
+      working-directory: manifests
+      run: |
+          kubectl apply -f deployment-app-v1.yaml
+          kubectl apply -f service-app-v1.yaml
+          kubectl get svc -A
+          kubectl get pods -A
+          
