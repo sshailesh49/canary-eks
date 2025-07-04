@@ -10,6 +10,7 @@ spec:
   selector:
     app: my-app
     version: v1
+  type: NodePort
   ports:
   - name: web
     port: 8000
