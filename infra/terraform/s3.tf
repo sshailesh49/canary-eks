@@ -1,6 +1,4 @@
-provider "aws" {
-  region = "us-west-2"
-}
+
 
 # ✅ Create S3 bucket to hold state
 resource "aws_s3_bucket" "terraform_state" {
