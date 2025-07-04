@@ -20,4 +20,5 @@ jobs:
           cd projects/mysite
            #docker build . --file Dockerfile --tag shailesh49/djangoapp:$(date +%s)
            docker build . --file Dockerfile --tag shailesh49/djangoapp:${{ github.run_number }}
+           docker build . --file Dockerfile --tag shailesh49/djangoapp:latest
            docker images
