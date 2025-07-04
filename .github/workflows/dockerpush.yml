@@ -51,7 +51,7 @@ jobs:
       run: terraform plan
     - name: Terraform Apply
       working-directory: infra/terraform
-      run: terraform destroy -auto-approve
+      run: terraform apply -auto-approve
     - name: Install kubectl
       run: |
           KUBECTL_VERSION=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
