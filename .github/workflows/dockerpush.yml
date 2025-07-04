@@ -65,6 +65,7 @@ jobs:
     - name: Deploment Apply
       working-directory: manifests
       run: |
+          kubectl create ns monitoring
           kubectl apply -f deployment-app-v1.yaml
           kubectl apply -f service-app-v1.yaml
           kubectl get svc -A
