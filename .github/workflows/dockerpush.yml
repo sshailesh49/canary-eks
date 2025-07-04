@@ -44,14 +44,14 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
     - name: Terraform Init
-    #   working-directory: infra/terraform
-      run: terraform destroy
-    # - name: Terraform Plan
-    #   working-directory: infra/terraform
-    #   run: terraform plan
-    # - name: Terraform Apply
-    #   working-directory: infra/terraform
-    #   run: terraform apply -auto-approve
+      working-directory: infra/terraform
+      run: terraform init
+    - name: Terraform Plan
+      working-directory: infra/terraform
+      run: terraform plan
+    - name: Terraform Apply
+      working-directory: infra/terraform
+      run: terraform apply -auto-approve
     - name: Install kubectl
       run: |
           KUBECTL_VERSION=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
@@ -63,11 +63,8 @@ jobs:
       run: |
           aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_REGION
     - name: Deploment Apply
-      working-directory: manifests
+      #working-directory: manifests
       run: |
           kubectl create ns monitoring
-          kubectl apply -f deployment-app-v1.yaml
-          kubectl apply -f service-app-v1.yaml
-          kubectl get svc -A
-          kubectl get pods -A
+          kubectl apply -f manifests/
           
