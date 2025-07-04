@@ -25,6 +25,9 @@ jobs:
 
     - name: Build and Push Docker Image
       run: |
+        cd projects/mysite
         docker build -t ${{ secrets.DOCKER_USERNAME }}/djangoapp:${{ github.run_number }} .
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/djangoapp:latest .
         docker push ${{ secrets.DOCKER_USERNAME }}/djangoapp:${{ github.run_number }}
+        docker push ${{ secrets.DOCKER_USERNAME }}/djangoapp:latest
 
