@@ -34,4 +34,4 @@ jobs:
     - name: Run Tests
       run: |
         cd projects/mysite 
-        python manage.py runserver
+        python manage.py test
