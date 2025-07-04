@@ -8,6 +8,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ap-south-1     # आपकी AWS region
+      CLUSTER_NAME: my-eks-cluste
 
     steps:
     - name: Checkout code
@@ -30,4 +33,22 @@ jobs:
         docker build -t ${{ secrets.DOCKER_USERNAME }}/djangoapp:latest .
         docker push ${{ secrets.DOCKER_USERNAME }}/djangoapp:${{ github.run_number }}
         docker push ${{ secrets.DOCKER_USERNAME }}/djangoapp:latest
-
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.6.6
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+    - name: Terraform Init
+      working-directory: infra/terraform
+      run: terraform init
+    - name: Terraform Plan
+      working-directory: infra/terraform
+      run: terraform plan
+    - name: Terraform Apply
+      working-directory: infra/terraform
+      run: terraform apply -auto-approve
