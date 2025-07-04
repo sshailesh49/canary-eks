@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AWS_REGION: ap-south-1     # आपकी AWS region
-      CLUSTER_NAME: my-eks-cluste
+      CLUSTER_NAME: my-eks-cluster
 
     steps:
     - name: Checkout code
