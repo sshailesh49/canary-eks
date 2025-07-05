@@ -1,7 +1,7 @@
 
                                     Canary Deployment Custom  ,  Prometheus  ,HPA  TERRAFORM 
 
-# NOTE : IF  USE Terraform 
+# NOTE : IF  USE Terraform for create infra 
    CTEATE S3 Bucket and DynomoDB (Configration gives in last this file )
  
   
