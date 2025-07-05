@@ -3,7 +3,7 @@ terraform {
   backend "s3" {
     bucket         = "my-eks-shailesh"         # 🔁 S3 bucket name (must exist)
     key            = "eks-cluster/terraform.tfstate"  # 📄 path to tfstate file inside the bucket
-    region         = "us-west-2"                      # 🌍 AWS region
+    region         = "us-west-2"                      # 🌍 AWS region   var.region
     dynamodb_table = "terraform-lock-table"           # 🔒 DynamoDB table for state locking
     encrypt        = true
 }
