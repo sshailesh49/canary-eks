@@ -1,5 +1,13 @@
 terraform {
   required_version = ">= 1.3.0"
+  backend "s3" {
+    bucket         = "my-eks-shailesh"         # 🔁 S3 bucket name (must exist)
+    key            = "eks-cluster/terraform.tfstate"  # 📄 path to tfstate file inside the bucket
+    region         = "us-west-2"                      # 🌍 AWS region
+    dynamodb_table = "terraform-lock-table"           # 🔒 DynamoDB table for state locking
+    encrypt        = true
+}
+}
 
   required_providers {
     aws = {
