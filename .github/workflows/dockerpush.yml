@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      AWS_REGION: ap-south-1     # आपकी AWS region
+      AWS_REGION: ap-south-1     # AWS region
       CLUSTER_NAME: my-eks-cluster
 
     steps:
@@ -45,7 +45,8 @@ jobs:
         aws-region: ${{ env.AWS_REGION }}
     - name: Terraform Init
       working-directory: infra/terraform
-      run: terraform init
+      run: terraform init  -reconfigure    # -migrate-state 0r -reconfigure (terraform init -migrate-state -reconfigure)
+
     - name: Terraform Plan
       working-directory: infra/terraform
       run: terraform plan
