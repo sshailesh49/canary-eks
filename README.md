@@ -1,7 +1,8 @@
 
                                     Canary Deployment Custom  ,  Prometheus  ,HPA  TERRAFORM 
 
-# NOTE : IF  USE Terraform CTEATE S3 Bucket and DynomoDB (Configration gives in last this file )
+# NOTE : IF  USE Terraform 
+   CTEATE S3 Bucket and DynomoDB (Configration gives in last this file )
  
   
 # Create Cluster
