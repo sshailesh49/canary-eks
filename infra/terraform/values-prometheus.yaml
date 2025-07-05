@@ -1,15 +1,37 @@
+# grafana:
+#   enabled: true
+#   adminPassword: "admin123"
+#   service:
+#     type: LoadBalancer
+
+# prometheus:
+#   prometheusSpec:
+#     serviceMonitorSelectorNilUsesHelmValues: false
+
+# serviceAccounts:
+#   alertmanager:
+#     create: true
+#   prometheus:
+#     create: true
+
 grafana:
   enabled: true
   adminPassword: "admin123"
   service:
-    type: LoadBalancer
+    type: NodePort            # 🟢 NodePort instead of LoadBalancer
+    nodePort: 32000           # 🔐 Optional: Fixed port (30000–32767)
 
 prometheus:
   prometheusSpec:
     serviceMonitorSelectorNilUsesHelmValues: false
+
+  service:
+    type: NodePort            # 🟢 Prometheus service also exposed as NodePort
+    nodePort: 32090           # 🔐 Optional: Port for Prometheus UI
 
 serviceAccounts:
   alertmanager:
     create: true
   prometheus:
     create: true
+
