@@ -14,6 +14,11 @@ output "region" {
   value = var.region
 }
 
+output "grafana_url" {
+  value       = helm_release.prometheus.status[0].load_balancer[0].ingress[0].hostname
+  description = "Grafana LoadBalancer URL"
+}
+
 
 
 
