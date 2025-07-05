@@ -1,4 +1,9 @@
-                                    Canary Deployment Custom  ,  Prometheus  ,HPA 
+
+                                    Canary Deployment Custom  ,  Prometheus  ,HPA  TERRAFORM 
+
+# NOTE : IF  USE Terraform CTEATE S3 Bucket and DynomoDB (Configration gives in last this file )
+ 
+  
 # Create Cluster
 eksctl create cluster   --profile ram   --name my-eks-cluster   --region us-west-2   --version 1.29   --nodegroup-name standard-workers   --node-type t2.medium   --nodes 1   --nodes-min 1   --nodes-max 3   --node-volume-size 20   --managed   --with-oidc
 # canary-deployment
@@ -508,4 +513,155 @@ spec:
 
 
 
-# canary-eks
+# TERRAFORM 
+
+                                                               Use Terraform 
+
+#🔹 2. Create  S3 bucket  :
+
+      aws s3api create-bucket \
+        --bucket my-eks-terraform-state \
+        --region us-west-2 \
+       --create-bucket-configuration LocationConstraint=us-west-2
+
+NOTE  Not use  -- create-bucket-configuration LocationConstraint in us-east-1
+    
+# 🛡️ 3. Optional: Enable versioning and encryption (recommended for Terraform)
+ # Enable versioning:
+    aws s3api put-bucket-versioning \
+       --bucket my-eks-terraform-state \
+       --versioning-configuration Status=Enabled
+
+# Enable server-side encryption:
+ aws s3api put-bucket-encryption \
+  --bucket my-eks-terraform-state \
+  --server-side-encryption-configuration '{
+    "Rules": [{
+      "ApplyServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+      }
+    }]
+  }'
+
+
+# 🛠️ Create DynamoDB Table for State Locking
+   
+aws dynamodb create-table \
+  --table-name terraform-lock-table \
+  --attribute-definitions AttributeName=LockID,AttributeType=S \
+  --key-schema AttributeName=LockID,KeyType=HASH \
+  --billing-mode PAY_PER_REQUEST \
+  --region us-west-2
+
+# Verify Table Created
+  aws dynamodb list-tables --region us-west-2
+
+# NOW #  Ready to Use with Terraform
+ -- backend.tf 
+    
+           terraform {
+                     backend "s3" {
+                                     bucket         = "my-eks-terraform-state"
+                                    key            = "eks/terraform.tfstate"
+                                   region         = "us-west-2"
+                                  dynamodb_table = "terraform-lock-table"
+                                   encrypt        = true
+                                                }
+                               }
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                                #    Second way create S3 Bucket and DynomoDB 
+
+📁 bootstrap-backend.tf (Terraform script to create backend infra):
+      
+provider "aws" {
+  region = "us-east-1"
+}
+
+resource "aws_s3_bucket" "terraform_state" {
+  bucket = "my-eks-shailesh"
+
+  versioning {
+    enabled = true
+  }
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+
+  tags = {
+    Name        = "Terraform State Bucket"
+    Environment = "dev"
+  }
+}
+
+resource "aws_dynamodb_table" "terraform_locks" {
+  name         = "terraform-lock-table"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "LockID"
+
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
+
+  tags = {
+    Name        = "Terraform Lock Table"
+    Environment = "dev"
+  }
+}
+
+NOTE : process – Create a Folder in local and create a above file in folder after that 
+      Run Following CMD into the folder:
+       terraform init
+        terraform apply -auto-approve
+
+this script  created S3 bucket and   DynamoDB table on AWS
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Create a short Example  file : 
+  terraform {
+  required_version = ">= 1.3.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+
+ backend "s3" {
+    bucket         = "my-eks-shailesh"         # 🔁 S3 bucket name (must exist)
+    key            = "eks-cluster/terraform.tfstate"  # 📄 path to tfstate file inside the bucket
+    region         = "us-west-2"                      # 🌍 AWS region
+    dynamodb_table = "terraform-lock-table"           # 🔒 DynamoDB table for state locking
+    encrypt        = true
+}
+}
+
+
+
+provider "aws" {
+  region  = "us-east-1"
+  profile = "ram"
+}
+
+# VPC
+resource "aws_vpc" "main" {
+  cidr_block           = var.vpc_cidr
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+
+  tags = {
+    Name = "${var.name_prefix}-vpc"
+  }
+}
+
+
+
+  
+
